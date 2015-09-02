@@ -3,11 +3,10 @@ package com.cantrowitz.rxbroadcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.os.Handler;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -22,27 +21,25 @@ import static org.mockito.Mockito.when;
 /**
  * Created by adamcantrowitz on 9/2/15.
  */
-public class GlobalBroadcastProviderTest {
+public class GlobalWPermissionsBroadcastProviderTest {
     @Mock
     Context context;
     @Mock
     IntentFilter intentFilter;
     @Mock
     BroadcastReceiver broadcastReceiver;
+    @Mock
+    Handler handler;
 
-    GlobalBroadcastProvider testSubject;
+    GlobalWPermissionsBroadcastProvider testSubject;
+    private static final String broadcastPermission = "broadcastPermission";
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         when(context.getApplicationContext()).thenReturn(context);
-        testSubject = new GlobalBroadcastProvider(intentFilter, context);
-    }
-
-    @Test
-    public void testRegisterBroadcastReceiver() throws Exception {
-        testSubject.registerBroadcastReceiver(broadcastReceiver);
-        verify(context).registerReceiver(broadcastReceiver, intentFilter);
+        testSubject = new GlobalWPermissionsBroadcastProvider(intentFilter, context,
+                broadcastPermission, handler);
     }
 
     @Test
@@ -54,8 +51,15 @@ public class GlobalBroadcastProviderTest {
     public void testSubscriptionLifecycle(){
         Subscription subscribe = Observable.create(testSubject)
                 .subscribe();
-        verify(context).registerReceiver(any(BroadcastReceiver.class), eq(intentFilter));
+        verify(context).registerReceiver(any(BroadcastReceiver.class), eq(intentFilter),
+                eq(broadcastPermission), eq(handler));
         subscribe.unsubscribe();
         verify(context).unregisterReceiver(any(BroadcastReceiver.class));
+    }
+
+    @Test
+    public void testRegisterBroadcastReceiver() throws Exception {
+        testSubject.registerBroadcastReceiver(broadcastReceiver);
+        verify(context).registerReceiver(broadcastReceiver,intentFilter,broadcastPermission,handler);
     }
 }

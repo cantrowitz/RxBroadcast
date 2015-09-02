@@ -13,6 +13,7 @@ import rx.Observable;
 import rx.Subscription;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -49,9 +50,10 @@ public class LocalBroadcastProviderTest {
     }
 
     @Test
-    public void testUnregisterBroadcastReceiver_isCalled_whenUnsubscribed(){
+    public void testSubscriptionLifecycle() {
         Subscription subscribe = Observable.create(testSubject)
                 .subscribe();
+        verify(localBroadcastManager).registerReceiver(any(BroadcastReceiver.class), eq(intentFilter));
         subscribe.unsubscribe();
         verify(localBroadcastManager).unregisterReceiver(any(BroadcastReceiver.class));
     }
