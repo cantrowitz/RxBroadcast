@@ -17,6 +17,7 @@ public class RxBroadcast {
     }
 
     public static Observable<Intent> fromLocalBroadcast(Context context, IntentFilter intentFilter) {
-        return Observable.create(new LocalBroadcastProvider(intentFilter, LocalBroadcastManager.getInstance(context)));
+        return Observable.create(new LocalBroadcastProvider(intentFilter,
+                LocalBroadcastManager.getInstance(context)));
     }
 }
