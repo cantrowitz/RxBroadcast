@@ -6,7 +6,7 @@ Reactive `Broadcast` and `LocalBroadcast` for Android.
 `Observable<Intent> = RxBroadcast.fromBroadcast(context, intentFilter);`
 
 #### LocalBroadcast
-``Observable<Intent> = RxBroadcast.fromLocalBroadcast(context, intentFilter);`
+`Observable<Intent> = RxBroadcast.fromLocalBroadcast(context, intentFilter);`
 
 
 License
