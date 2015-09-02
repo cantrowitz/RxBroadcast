@@ -12,17 +12,16 @@ Reactive `Broadcast` and `LocalBroadcast` for Android.
 Be sure to unregistering your receiver, this is typically done in the `Activity.onStop()`, by simply unsubscribing from your earlier subscription.
 
 `Subscription subscription = RxBroadcast.fromLocalBroadcast(context, intentFilter).subscribe(...);`
-
 ...
-
 ```
   @Override
-    protected void onStop() {
-        super.onStop();
+  protected void onStop() {
+    super.onStop();
 
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
+    if (subscription != null) {
+      subscription.unsubscribe();
+    }
+  }
 ```
 
 License
