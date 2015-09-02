@@ -9,8 +9,11 @@ import android.content.IntentFilter;
  */
 class GlobalBroadcastProvider extends BroadcastProviderStrategy {
 
-    GlobalBroadcastProvider(Context context, IntentFilter intentFilter) {
-        super(context, intentFilter);
+    private final Context context;
+
+    GlobalBroadcastProvider(IntentFilter intentFilter, Context context) {
+        super(intentFilter);
+        this.context = context.getApplicationContext();
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.cantrowitz.rxbroadcast;
 
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -11,9 +10,9 @@ import android.support.v4.content.LocalBroadcastManager;
 class LocalBroadcastProvider extends BroadcastProviderStrategy {
     final LocalBroadcastManager localBroadcastManager;
 
-    LocalBroadcastProvider(Context context, IntentFilter intentFilter) {
-        super(context, intentFilter);
-        localBroadcastManager = LocalBroadcastManager.getInstance(context);
+    LocalBroadcastProvider(IntentFilter intentFilter, LocalBroadcastManager localBroadcastManager) {
+        super(intentFilter);
+        this.localBroadcastManager = localBroadcastManager;
     }
 
     @Override

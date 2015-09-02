@@ -16,11 +16,9 @@ import rx.subscriptions.Subscriptions;
  * Created by adamcantrowitz on 9/1/15.
  */
  abstract class BroadcastProviderStrategy implements Observable.OnSubscribe<Intent> {
-    protected final Context context;
     protected final IntentFilter intentFilter;
 
-    BroadcastProviderStrategy(Context context, IntentFilter intentFilter) {
-        this.context = context.getApplicationContext();
+    BroadcastProviderStrategy(IntentFilter intentFilter) {
         this.intentFilter = intentFilter;
     }
 
