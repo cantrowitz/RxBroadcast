@@ -1,7 +1,7 @@
 # RxBroadcast
 Reactive `Broadcast` and `LocalBroadcast` for Android.
 
-![badge](https://api.travis-ci.org/cantrowitz/RxAndroid.svg)
+![badge](https://travis-ci.org/cantrowitz/RxBroadcast.svg?branch=master)
 
 # Usage
 #### System Broadcast
