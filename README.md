@@ -1,6 +1,8 @@
 # RxBroadcast
 Reactive `Broadcast` and `LocalBroadcast` for Android.
 
+![badge](https://api.travis-ci.org/cantrowitz/RxAndroid.svg)
+
 # Usage
 #### System Broadcast
 `Observable<Intent> = RxBroadcast.fromBroadcast(context, intentFilter);`
