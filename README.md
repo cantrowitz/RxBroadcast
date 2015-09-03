@@ -5,6 +5,10 @@ Reactive `Broadcast` and `LocalBroadcast` for Android.
 #### System Broadcast
 `Observable<Intent> = RxBroadcast.fromBroadcast(context, intentFilter);`
 
+or 
+
+`Observable<Intent> = RxBroadcast.fromBroadcast(context, intentFilter, broadcastPermission, handler);`
+
 #### LocalBroadcast
 `Observable<Intent> = RxBroadcast.fromLocalBroadcast(context, intentFilter);`
 
