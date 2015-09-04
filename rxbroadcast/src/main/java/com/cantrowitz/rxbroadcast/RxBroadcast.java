@@ -23,7 +23,7 @@ public class RxBroadcast {
      *
      * @param context the context the {@link BroadcastReceiver} will be created from
      * @param intentFilter the filter for the particular intent
-     * @return Observable of {@link Intent} that matches the filter
+     * @return {@link Observable} of {@link Intent} that matches the filter
      */
     public static Observable<Intent> fromBroadcast(Context context, IntentFilter intentFilter) {
         return Observable.create(new GlobalBroadcastProvider(intentFilter, context));
@@ -35,7 +35,7 @@ public class RxBroadcast {
      * @param intentFilter the filter for the particular intent
      * @param broadcastPermission String naming a permissions that a broadcaster must hold in order to send an Intent to you. If null, no permission is required.
      * @param handler Handler identifying the thread that will receive the Intent. If null, the main thread of the process will be used.
-     * @return
+     * @return {@link Observable} of {@link Intent} that matches the filter
      */
     public static Observable<Intent> fromBroadcast(Context context, IntentFilter intentFilter,
                                                    String broadcastPermission, Handler handler) {
@@ -48,7 +48,7 @@ public class RxBroadcast {
      *  This uses a {@link LocalBroadcastManager}
      * @param context the context the {@link BroadcastReceiver} will be created from
      * @param intentFilter the filter for the particular intent
-     * @return Observable of {@link Intent} that matches the filter
+     * @return {@link Observable} of {@link Intent} that matches the filter
      */
     public static Observable<Intent> fromLocalBroadcast(Context context, IntentFilter intentFilter) {
         return Observable.create(new LocalBroadcastProvider(intentFilter,
