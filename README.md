@@ -31,6 +31,12 @@ Be sure to unregistering your receiver, this is typically done in the `Activity.
   }
 ```
 
+# Installation
+
+```groovy
+compile 'com.cantrowitz:rxbroadcast:0.1.0'
+```
+
 License
 -------
 
