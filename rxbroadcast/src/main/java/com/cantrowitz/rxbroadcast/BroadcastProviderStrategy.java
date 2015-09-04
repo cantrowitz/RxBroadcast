@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -17,6 +18,7 @@ import rx.subscriptions.Subscriptions;
  */
  abstract class BroadcastProviderStrategy implements Observable.OnSubscribe<Intent> {
     protected final IntentFilter intentFilter;
+    private BroadcastReceiver broadcastReceiver;
 
     BroadcastProviderStrategy(IntentFilter intentFilter) {
         this.intentFilter = intentFilter;
@@ -25,7 +27,7 @@ import rx.subscriptions.Subscriptions;
     @Override
     public void call(final Subscriber<? super Intent> subscriber) {
 
-        final BroadcastReceiver broadcastReceiver = createBroadcastReceiver(subscriber);
+        broadcastReceiver = createBroadcastReceiver(subscriber);
 
         final Subscription subscription = Subscriptions.create(new Action0() {
             @Override
@@ -36,6 +38,11 @@ import rx.subscriptions.Subscriptions;
 
         subscriber.add(subscription);
         registerBroadcastReceiver(broadcastReceiver);
+    }
+
+    @VisibleForTesting
+    BroadcastReceiver getBroadcastReceiver(){
+        return broadcastReceiver;
     }
 
     protected abstract void registerBroadcastReceiver(BroadcastReceiver broadcastReceiver);

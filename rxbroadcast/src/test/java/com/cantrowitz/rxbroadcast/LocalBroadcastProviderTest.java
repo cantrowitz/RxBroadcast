@@ -1,24 +1,32 @@
 package com.cantrowitz.rxbroadcast;
 
 import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 
 import rx.Observable;
 import rx.Subscription;
+import rx.observers.TestSubscriber;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
  * Created by adamcantrowitz on 9/2/15.
  */
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 16)
 public class LocalBroadcastProviderTest {
 
     @Mock
@@ -26,6 +34,10 @@ public class LocalBroadcastProviderTest {
     @Mock
     IntentFilter intentFilter;
     @Mock
+    Context context;
+    @Mock
+    Intent intent;
+
     BroadcastReceiver broadcastReceiver;
 
     private LocalBroadcastProvider testSubject;
@@ -39,22 +51,29 @@ public class LocalBroadcastProviderTest {
 
     @Test
     public void testRegisterBroadcastReceiver() throws Exception {
-        testSubject.registerBroadcastReceiver(broadcastReceiver);
-        verify(localBroadcastManager).registerReceiver(broadcastReceiver, intentFilter);
+        BroadcastReceiver mockReceiver = mock(BroadcastReceiver.class);
+        testSubject.registerBroadcastReceiver(mockReceiver);
+        verify(localBroadcastManager).registerReceiver(mockReceiver, intentFilter);
     }
 
     @Test
     public void testUnregisterBroadcastReceiver() throws Exception {
-        testSubject.unregisterBroadcastReceiver(broadcastReceiver);
-        verify(localBroadcastManager).unregisterReceiver(broadcastReceiver);
+        BroadcastReceiver mockReceiver = mock(BroadcastReceiver.class);
+        testSubject.unregisterBroadcastReceiver(mockReceiver);
+        verify(localBroadcastManager).unregisterReceiver(mockReceiver);
     }
 
     @Test
     public void testSubscriptionLifecycle() {
+        TestSubscriber<Intent> testSubscriber = new TestSubscriber<>();
         Subscription subscribe = Observable.create(testSubject)
-                .subscribe();
-        verify(localBroadcastManager).registerReceiver(any(BroadcastReceiver.class), eq(intentFilter));
+                .subscribe(testSubscriber);
+        broadcastReceiver = testSubject.getBroadcastReceiver();
+        verify(localBroadcastManager).registerReceiver(eq(broadcastReceiver), eq(intentFilter));
+        broadcastReceiver.onReceive(context, intent);
         subscribe.unsubscribe();
-        verify(localBroadcastManager).unregisterReceiver(any(BroadcastReceiver.class));
+        verify(localBroadcastManager).unregisterReceiver(broadcastReceiver);
+        testSubscriber.assertValue(intent);
+        testSubscriber.assertNoErrors();
     }
 }

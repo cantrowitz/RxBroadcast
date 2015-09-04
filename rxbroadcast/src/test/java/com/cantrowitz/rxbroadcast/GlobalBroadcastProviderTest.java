@@ -2,19 +2,18 @@ package com.cantrowitz.rxbroadcast;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Subscription;
+import rx.observers.TestSubscriber;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +27,7 @@ public class GlobalBroadcastProviderTest {
     @Mock
     IntentFilter intentFilter;
     @Mock
+    Intent intent;
     BroadcastReceiver broadcastReceiver;
 
     GlobalBroadcastProvider testSubject;
@@ -50,12 +50,20 @@ public class GlobalBroadcastProviderTest {
         testSubject.unregisterBroadcastReceiver(broadcastReceiver);
         verify(context).unregisterReceiver(broadcastReceiver);
     }
+
     @Test
-    public void testSubscriptionLifecycle(){
+    public void testSubscriptionLifecycle() {
+        TestSubscriber<Intent> testSubscriber = new TestSubscriber<>();
         Subscription subscribe = Observable.create(testSubject)
-                .subscribe();
-        verify(context).registerReceiver(any(BroadcastReceiver.class), eq(intentFilter));
+                .subscribe(testSubscriber);
+        broadcastReceiver = testSubject.getBroadcastReceiver();
+
+        verify(context).registerReceiver(eq(broadcastReceiver), eq(intentFilter));
+        broadcastReceiver.onReceive(context, intent);
         subscribe.unsubscribe();
-        verify(context).unregisterReceiver(any(BroadcastReceiver.class));
+        verify(context).unregisterReceiver(broadcastReceiver);
+        testSubscriber.assertValue(intent);
+        testSubscriber.assertNoErrors();
+
     }
 }
