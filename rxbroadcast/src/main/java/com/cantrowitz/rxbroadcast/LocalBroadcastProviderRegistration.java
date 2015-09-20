@@ -7,21 +7,22 @@ import android.support.v4.content.LocalBroadcastManager;
 /**
  * Created by adamcantrowitz on 9/1/15.
  */
-class LocalBroadcastProvider extends BroadcastProviderStrategy {
+class LocalBroadcastProviderRegistration implements BroadcastReceiverRegistrationStrategy {
     final LocalBroadcastManager localBroadcastManager;
+    private final IntentFilter intentFilter;
 
-    LocalBroadcastProvider(IntentFilter intentFilter, LocalBroadcastManager localBroadcastManager) {
-        super(intentFilter);
+    LocalBroadcastProviderRegistration(IntentFilter intentFilter, LocalBroadcastManager localBroadcastManager) {
+        this.intentFilter = intentFilter;
         this.localBroadcastManager = localBroadcastManager;
     }
 
     @Override
-    protected void registerBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
+    public void registerBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
         localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
     }
 
     @Override
-    protected void unregisterBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
+    public void unregisterBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
         localBroadcastManager.unregisterReceiver(broadcastReceiver);
     }
 }

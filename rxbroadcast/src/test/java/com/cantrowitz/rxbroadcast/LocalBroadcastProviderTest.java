@@ -40,13 +40,13 @@ public class LocalBroadcastProviderTest {
 
     BroadcastReceiver broadcastReceiver;
 
-    private LocalBroadcastProvider testSubject;
+    private LocalBroadcastProviderRegistration testSubject;
 
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        testSubject = new LocalBroadcastProvider(intentFilter, localBroadcastManager);
+        testSubject = new LocalBroadcastProviderRegistration(intentFilter, localBroadcastManager);
     }
 
     @Test
@@ -66,9 +66,10 @@ public class LocalBroadcastProviderTest {
     @Test
     public void testSubscriptionLifecycle() {
         TestSubscriber<Intent> testSubscriber = new TestSubscriber<>();
-        Subscription subscribe = Observable.create(testSubject)
+        BroadcastProvider broadcastProvider = new BroadcastProvider(testSubject);
+        Subscription subscribe = Observable.create(broadcastProvider)
                 .subscribe(testSubscriber);
-        broadcastReceiver = testSubject.getBroadcastReceiver();
+        broadcastReceiver = broadcastProvider.getBroadcastReceiver();
         verify(localBroadcastManager).registerReceiver(eq(broadcastReceiver), eq(intentFilter));
         broadcastReceiver.onReceive(context, intent);
         subscribe.unsubscribe();

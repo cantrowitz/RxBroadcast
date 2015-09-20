@@ -7,22 +7,23 @@ import android.content.IntentFilter;
 /**
  * Created by adamcantrowitz on 9/1/15.
  */
-class GlobalBroadcastProvider extends BroadcastProviderStrategy {
+class GlobalBroadcastProviderRegistration implements BroadcastReceiverRegistrationStrategy {
 
     protected final Context context;
+    private final IntentFilter intentFilter;
 
-    GlobalBroadcastProvider(IntentFilter intentFilter, Context context) {
-        super(intentFilter);
+    GlobalBroadcastProviderRegistration(IntentFilter intentFilter, Context context) {
+        this.intentFilter = intentFilter;
         this.context = context.getApplicationContext();
     }
 
     @Override
-    protected void registerBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
+    public void registerBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
         context.registerReceiver(broadcastReceiver, intentFilter);
     }
 
     @Override
-    protected void unregisterBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
+    public void unregisterBroadcastReceiver(BroadcastReceiver broadcastReceiver) {
         context.unregisterReceiver(broadcastReceiver);
     }
 }

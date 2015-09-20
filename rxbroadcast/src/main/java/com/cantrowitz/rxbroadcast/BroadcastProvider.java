@@ -3,7 +3,6 @@ package com.cantrowitz.rxbroadcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
@@ -16,12 +15,12 @@ import rx.subscriptions.Subscriptions;
 /**
  * Created by adamcantrowitz on 9/1/15.
  */
- abstract class BroadcastProviderStrategy implements Observable.OnSubscribe<Intent> {
-    protected final IntentFilter intentFilter;
+class BroadcastProvider implements Observable.OnSubscribe<Intent> {
     private BroadcastReceiver broadcastReceiver;
+    private BroadcastReceiverRegistrationStrategy broadcastReceiverRegistrationStrategy;
 
-    BroadcastProviderStrategy(IntentFilter intentFilter) {
-        this.intentFilter = intentFilter;
+    BroadcastProvider(BroadcastReceiverRegistrationStrategy broadcastReceiverRegistrationStrategy) {
+        this.broadcastReceiverRegistrationStrategy = broadcastReceiverRegistrationStrategy;
     }
 
     @Override
@@ -32,29 +31,28 @@ import rx.subscriptions.Subscriptions;
         final Subscription subscription = Subscriptions.create(new Action0() {
             @Override
             public void call() {
-                unregisterBroadcastReceiver(broadcastReceiver);
+                broadcastReceiverRegistrationStrategy.unregisterBroadcastReceiver(broadcastReceiver);
             }
         });
 
-        registerBroadcastReceiver(broadcastReceiver);
+        broadcastReceiverRegistrationStrategy.registerBroadcastReceiver(broadcastReceiver);
         subscriber.add(subscription);
     }
 
     @VisibleForTesting
-    BroadcastReceiver getBroadcastReceiver(){
+    BroadcastReceiver getBroadcastReceiver() {
         return broadcastReceiver;
     }
 
-    protected abstract void registerBroadcastReceiver(BroadcastReceiver broadcastReceiver);
-
-    protected abstract void unregisterBroadcastReceiver(BroadcastReceiver broadcastReceiver);
 
     @NonNull
     private BroadcastReceiver createBroadcastReceiver(final Subscriber<? super Intent> subscriber) {
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                subscriber.onNext(intent);
+                if (!subscriber.isUnsubscribed()) {
+                    subscriber.onNext(intent);
+                }
             }
         };
     }
