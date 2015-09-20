@@ -36,8 +36,8 @@ import rx.subscriptions.Subscriptions;
             }
         });
 
-        subscriber.add(subscription);
         registerBroadcastReceiver(broadcastReceiver);
+        subscriber.add(subscription);
     }
 
     @VisibleForTesting
