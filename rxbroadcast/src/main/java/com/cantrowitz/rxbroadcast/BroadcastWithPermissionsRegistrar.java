@@ -8,15 +8,15 @@ import android.os.Handler;
 /**
  * Created by adamcantrowitz on 9/1/15.
  */
-class GlobalWPermissionsBroadcastProviderRegistration implements BroadcastReceiverRegistrationStrategy {
+class BroadcastWithPermissionsRegistrar implements BroadcastRegistrarStrategy {
 
     private final String permissions;
     private final Handler handler;
     private final Context context;
     private final IntentFilter intentFilter;
 
-    GlobalWPermissionsBroadcastProviderRegistration(IntentFilter intentFilter, Context context,
-                                                    String broadcastPermission, Handler handler) {
+    BroadcastWithPermissionsRegistrar(IntentFilter intentFilter, Context context,
+                                      String broadcastPermission, Handler handler) {
         this.intentFilter = intentFilter;
         this.context = context;
         this.permissions = broadcastPermission;

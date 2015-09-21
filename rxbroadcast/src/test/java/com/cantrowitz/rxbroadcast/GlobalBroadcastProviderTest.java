@@ -30,13 +30,13 @@ public class GlobalBroadcastProviderTest {
     Intent intent;
     BroadcastReceiver broadcastReceiver;
 
-    GlobalBroadcastProviderRegistration testSubject;
+    BroadcastRegistrar testSubject;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         when(context.getApplicationContext()).thenReturn(context);
-        testSubject = new GlobalBroadcastProviderRegistration(intentFilter, context);
+        testSubject = new BroadcastRegistrar(intentFilter, context);
     }
 
     @Test

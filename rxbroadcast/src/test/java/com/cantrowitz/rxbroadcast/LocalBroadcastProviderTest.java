@@ -40,13 +40,13 @@ public class LocalBroadcastProviderTest {
 
     BroadcastReceiver broadcastReceiver;
 
-    private LocalBroadcastProviderRegistration testSubject;
+    private LocalBroadcastRegistrar testSubject;
 
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        testSubject = new LocalBroadcastProviderRegistration(intentFilter, localBroadcastManager);
+        testSubject = new LocalBroadcastRegistrar(intentFilter, localBroadcastManager);
     }
 
     @Test

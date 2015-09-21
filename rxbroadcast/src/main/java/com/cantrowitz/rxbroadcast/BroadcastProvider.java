@@ -17,10 +17,10 @@ import rx.subscriptions.Subscriptions;
  */
 class BroadcastProvider implements Observable.OnSubscribe<Intent> {
     private BroadcastReceiver broadcastReceiver;
-    private BroadcastReceiverRegistrationStrategy broadcastReceiverRegistrationStrategy;
+    private BroadcastRegistrarStrategy broadcastRegistrarStrategy;
 
-    BroadcastProvider(BroadcastReceiverRegistrationStrategy broadcastReceiverRegistrationStrategy) {
-        this.broadcastReceiverRegistrationStrategy = broadcastReceiverRegistrationStrategy;
+    BroadcastProvider(BroadcastRegistrarStrategy broadcastRegistrarStrategy) {
+        this.broadcastRegistrarStrategy = broadcastRegistrarStrategy;
     }
 
     @Override
@@ -31,11 +31,11 @@ class BroadcastProvider implements Observable.OnSubscribe<Intent> {
         final Subscription subscription = Subscriptions.create(new Action0() {
             @Override
             public void call() {
-                broadcastReceiverRegistrationStrategy.unregisterBroadcastReceiver(broadcastReceiver);
+                broadcastRegistrarStrategy.unregisterBroadcastReceiver(broadcastReceiver);
             }
         });
 
-        broadcastReceiverRegistrationStrategy.registerBroadcastReceiver(broadcastReceiver);
+        broadcastRegistrarStrategy.registerBroadcastReceiver(broadcastReceiver);
         subscriber.add(subscription);
     }
 

@@ -26,7 +26,7 @@ public class RxBroadcast {
      * @return {@link Observable} of {@link Intent} that matches the filter
      */
     public static Observable<Intent> fromBroadcast(Context context, IntentFilter intentFilter) {
-        return Observable.create(new BroadcastProvider(new GlobalBroadcastProviderRegistration(intentFilter, context)));
+        return Observable.create(new BroadcastProvider(new BroadcastRegistrar(intentFilter, context)));
     }
 
     /**
@@ -40,7 +40,7 @@ public class RxBroadcast {
      */
     public static Observable<Intent> fromBroadcast(Context context, IntentFilter intentFilter,
                                                    String broadcastPermission, Handler handler) {
-        return Observable.create(new BroadcastProvider(new GlobalWPermissionsBroadcastProviderRegistration(intentFilter, context,
+        return Observable.create(new BroadcastProvider(new BroadcastWithPermissionsRegistrar(intentFilter, context,
                 broadcastPermission, handler)));
     }
 
@@ -54,7 +54,7 @@ public class RxBroadcast {
      * @return {@link Observable} of {@link Intent} that matches the filter
      */
     public static Observable<Intent> fromLocalBroadcast(Context context, IntentFilter intentFilter) {
-        return Observable.create(new BroadcastProvider(new LocalBroadcastProviderRegistration(intentFilter,
+        return Observable.create(new BroadcastProvider(new LocalBroadcastRegistrar(intentFilter,
                 LocalBroadcastManager.getInstance(context))));
     }
 }

@@ -31,14 +31,14 @@ public class GlobalWPermissionsBroadcastProviderTest {
     @Mock
     Handler handler;
 
-    GlobalWPermissionsBroadcastProviderRegistration testSubject;
+    BroadcastWithPermissionsRegistrar testSubject;
     private static final String broadcastPermission = "broadcastPermission";
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         when(context.getApplicationContext()).thenReturn(context);
-        testSubject = new GlobalWPermissionsBroadcastProviderRegistration(intentFilter, context,
+        testSubject = new BroadcastWithPermissionsRegistrar(intentFilter, context,
                 broadcastPermission, handler);
     }
 
