@@ -8,7 +8,7 @@ import android.support.v4.content.LocalBroadcastManager;
  * Created by adamcantrowitz on 9/1/15.
  */
 class LocalBroadcastRegistrar implements BroadcastRegistrarStrategy {
-    final LocalBroadcastManager localBroadcastManager;
+    private final LocalBroadcastManager localBroadcastManager;
     private final IntentFilter intentFilter;
 
     LocalBroadcastRegistrar(IntentFilter intentFilter, LocalBroadcastManager localBroadcastManager) {

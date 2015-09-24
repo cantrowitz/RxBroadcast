@@ -8,8 +8,7 @@ import android.content.IntentFilter;
  * Created by adamcantrowitz on 9/1/15.
  */
 class BroadcastRegistrar implements BroadcastRegistrarStrategy {
-
-    protected final Context context;
+    private final Context context;
     private final IntentFilter intentFilter;
 
     BroadcastRegistrar(IntentFilter intentFilter, Context context) {
