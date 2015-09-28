@@ -48,7 +48,7 @@ public class RxBroadcast {
 
     /**
      * Create {@link Observable} that wraps {@link BroadcastReceiver} and emits received intents.
-     * <p/>
+     *
      * This uses a {@link LocalBroadcastManager}
      *
      * @param context      the context the {@link BroadcastReceiver} will be created from
