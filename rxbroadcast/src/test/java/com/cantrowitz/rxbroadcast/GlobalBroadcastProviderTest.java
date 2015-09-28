@@ -30,13 +30,13 @@ public class GlobalBroadcastProviderTest {
     Intent intent;
     BroadcastReceiver broadcastReceiver;
 
-    GlobalBroadcastProvider testSubject;
+    BroadcastRegistrar testSubject;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         when(context.getApplicationContext()).thenReturn(context);
-        testSubject = new GlobalBroadcastProvider(intentFilter, context);
+        testSubject = new BroadcastRegistrar(context, intentFilter);
     }
 
     @Test
@@ -54,9 +54,10 @@ public class GlobalBroadcastProviderTest {
     @Test
     public void testSubscriptionLifecycle() {
         TestSubscriber<Intent> testSubscriber = new TestSubscriber<>();
-        Subscription subscribe = Observable.create(testSubject)
+        BroadcastProvider broadcastProvider = new BroadcastProvider(testSubject);
+        Subscription subscribe = Observable.create(broadcastProvider)
                 .subscribe(testSubscriber);
-        broadcastReceiver = testSubject.getBroadcastReceiver();
+        broadcastReceiver = broadcastProvider.getBroadcastReceiver();
 
         verify(context).registerReceiver(eq(broadcastReceiver), eq(intentFilter));
         broadcastReceiver.onReceive(context, intent);

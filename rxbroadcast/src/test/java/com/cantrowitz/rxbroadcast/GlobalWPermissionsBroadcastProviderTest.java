@@ -31,14 +31,14 @@ public class GlobalWPermissionsBroadcastProviderTest {
     @Mock
     Handler handler;
 
-    GlobalWPermissionsBroadcastProvider testSubject;
+    BroadcastWithPermissionsRegistrar testSubject;
     private static final String broadcastPermission = "broadcastPermission";
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         when(context.getApplicationContext()).thenReturn(context);
-        testSubject = new GlobalWPermissionsBroadcastProvider(intentFilter, context,
+        testSubject = new BroadcastWithPermissionsRegistrar(context, intentFilter,
                 broadcastPermission, handler);
     }
 
@@ -49,7 +49,8 @@ public class GlobalWPermissionsBroadcastProviderTest {
     }
     @Test
     public void testSubscriptionLifecycle(){
-        Subscription subscribe = Observable.create(testSubject)
+        BroadcastProvider broadcastProvider = new BroadcastProvider(testSubject);
+        Subscription subscribe = Observable.create(broadcastProvider)
                 .subscribe();
         verify(context).registerReceiver(any(BroadcastReceiver.class), eq(intentFilter),
                 eq(broadcastPermission), eq(handler));

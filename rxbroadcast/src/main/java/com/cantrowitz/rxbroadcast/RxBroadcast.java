@@ -21,37 +21,43 @@ public class RxBroadcast {
     /**
      * Create {@link Observable} that wraps {@link BroadcastReceiver} and emits received intents.
      *
-     * @param context the context the {@link BroadcastReceiver} will be created from
+     * @param context      the context the {@link BroadcastReceiver} will be created from
      * @param intentFilter the filter for the particular intent
      * @return {@link Observable} of {@link Intent} that matches the filter
      */
     public static Observable<Intent> fromBroadcast(Context context, IntentFilter intentFilter) {
-        return Observable.create(new GlobalBroadcastProvider(intentFilter, context));
+        BroadcastRegistrar broadcastRegistrar = new BroadcastRegistrar(context, intentFilter);
+        return Observable.create(new BroadcastProvider(broadcastRegistrar));
     }
 
     /**
-     *  Create {@link Observable} that wraps {@link BroadcastReceiver} and emits received intents.
-     * @param context the context the {@link BroadcastReceiver} will be created from
-     * @param intentFilter the filter for the particular intent
+     * Create {@link Observable} that wraps {@link BroadcastReceiver} and emits received intents.
+     *
+     * @param context             the context the {@link BroadcastReceiver} will be created from
+     * @param intentFilter        the filter for the particular intent
      * @param broadcastPermission String naming a permissions that a broadcaster must hold in order to send an Intent to you. If null, no permission is required.
-     * @param handler Handler identifying the thread that will receive the Intent. If null, the main thread of the process will be used.
+     * @param handler             Handler identifying the thread that will receive the Intent. If null, the main thread of the process will be used.
      * @return {@link Observable} of {@link Intent} that matches the filter
      */
     public static Observable<Intent> fromBroadcast(Context context, IntentFilter intentFilter,
                                                    String broadcastPermission, Handler handler) {
-        return Observable.create(new GlobalWPermissionsBroadcastProvider(intentFilter, context,
-                broadcastPermission, handler));
+        BroadcastWithPermissionsRegistrar broadcastWithPermissionsRegistrar =
+                new BroadcastWithPermissionsRegistrar(context, intentFilter, broadcastPermission, handler);
+        return Observable.create(new BroadcastProvider(broadcastWithPermissionsRegistrar));
     }
+
     /**
      * Create {@link Observable} that wraps {@link BroadcastReceiver} and emits received intents.
-     * <p>
-     *  This uses a {@link LocalBroadcastManager}
-     * @param context the context the {@link BroadcastReceiver} will be created from
+     *
+     * This uses a {@link LocalBroadcastManager}
+     *
+     * @param context      the context the {@link BroadcastReceiver} will be created from
      * @param intentFilter the filter for the particular intent
      * @return {@link Observable} of {@link Intent} that matches the filter
      */
     public static Observable<Intent> fromLocalBroadcast(Context context, IntentFilter intentFilter) {
-        return Observable.create(new LocalBroadcastProvider(intentFilter,
-                LocalBroadcastManager.getInstance(context)));
+        LocalBroadcastRegistrar localBroadcastRegistrar = new LocalBroadcastRegistrar(intentFilter,
+                LocalBroadcastManager.getInstance(context));
+        return Observable.create(new BroadcastProvider(localBroadcastRegistrar));
     }
 }
