@@ -26,7 +26,8 @@ public class RxBroadcast {
      * @return {@link Observable} of {@link Intent} that matches the filter
      */
     public static Observable<Intent> fromBroadcast(Context context, IntentFilter intentFilter) {
-        return Observable.create(new BroadcastProvider(new BroadcastRegistrar(intentFilter, context)));
+        BroadcastRegistrar broadcastRegistrar = new BroadcastRegistrar(context, intentFilter);
+        return Observable.create(new BroadcastProvider(broadcastRegistrar));
     }
 
     /**
@@ -40,13 +41,14 @@ public class RxBroadcast {
      */
     public static Observable<Intent> fromBroadcast(Context context, IntentFilter intentFilter,
                                                    String broadcastPermission, Handler handler) {
-        return Observable.create(new BroadcastProvider(new BroadcastWithPermissionsRegistrar(intentFilter, context,
-                broadcastPermission, handler)));
+        BroadcastWithPermissionsRegistrar broadcastWithPermissionsRegistrar =
+                new BroadcastWithPermissionsRegistrar(context, intentFilter, broadcastPermission, handler);
+        return Observable.create(new BroadcastProvider(broadcastWithPermissionsRegistrar));
     }
 
     /**
      * Create {@link Observable} that wraps {@link BroadcastReceiver} and emits received intents.
-     *
+     * <p/>
      * This uses a {@link LocalBroadcastManager}
      *
      * @param context      the context the {@link BroadcastReceiver} will be created from
@@ -54,7 +56,8 @@ public class RxBroadcast {
      * @return {@link Observable} of {@link Intent} that matches the filter
      */
     public static Observable<Intent> fromLocalBroadcast(Context context, IntentFilter intentFilter) {
-        return Observable.create(new BroadcastProvider(new LocalBroadcastRegistrar(intentFilter,
-                LocalBroadcastManager.getInstance(context))));
+        LocalBroadcastRegistrar localBroadcastRegistrar = new LocalBroadcastRegistrar(intentFilter,
+                LocalBroadcastManager.getInstance(context));
+        return Observable.create(new BroadcastProvider(localBroadcastRegistrar));
     }
 }

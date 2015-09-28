@@ -11,9 +11,9 @@ class BroadcastRegistrar implements BroadcastRegistrarStrategy {
     private final Context context;
     private final IntentFilter intentFilter;
 
-    BroadcastRegistrar(IntentFilter intentFilter, Context context) {
-        this.intentFilter = intentFilter;
+    BroadcastRegistrar(Context context, IntentFilter intentFilter) {
         this.context = context.getApplicationContext();
+        this.intentFilter = intentFilter;
     }
 
     @Override

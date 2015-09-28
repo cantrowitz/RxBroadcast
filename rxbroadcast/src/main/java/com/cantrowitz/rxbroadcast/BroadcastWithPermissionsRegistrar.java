@@ -15,10 +15,10 @@ class BroadcastWithPermissionsRegistrar implements BroadcastRegistrarStrategy {
     private final Context context;
     private final IntentFilter intentFilter;
 
-    BroadcastWithPermissionsRegistrar(IntentFilter intentFilter, Context context,
+    BroadcastWithPermissionsRegistrar(Context context, IntentFilter intentFilter,
                                       String broadcastPermission, Handler handler) {
-        this.intentFilter = intentFilter;
         this.context = context;
+        this.intentFilter = intentFilter;
         this.permissions = broadcastPermission;
         this.handler = handler;
     }

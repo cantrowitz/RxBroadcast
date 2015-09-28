@@ -38,7 +38,7 @@ public class GlobalWPermissionsBroadcastProviderTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         when(context.getApplicationContext()).thenReturn(context);
-        testSubject = new BroadcastWithPermissionsRegistrar(intentFilter, context,
+        testSubject = new BroadcastWithPermissionsRegistrar(context, intentFilter,
                 broadcastPermission, handler);
     }
 
