@@ -16,8 +16,8 @@ import rx.functions.Action1;
  */
 public class RxBroadcast {
 
-    private static final OrderedBroadcastStrategy NO_OP_ORDERED_BROADCAST_STRATEGY = new
-            OrderedBroadcastStrategy() {
+    private static final OrderedBroadcastAbortStrategy NO_OP_ORDERED_BROADCAST_STRATEGY = new
+            OrderedBroadcastAbortStrategy() {
                 @Override
                 public void handleOrderedBroadcast(Context context,
                                                    Intent intent,
@@ -50,15 +50,15 @@ public class RxBroadcast {
      * @param context                  the context the {@link BroadcastReceiver} will be
      *                                 created from
      * @param intentFilter             the filter for the particular intent
-     * @param orderedBroadcastStrategy the strategy to use for Ordered Broadcasts
+     * @param orderedBroadcastAbortStrategy the strategy to use for Ordered Broadcasts
      * @return {@link Observable} of {@link Intent} that matches the filter
      */
     public static Observable<Intent> fromBroadcast(
             Context context,
             IntentFilter intentFilter,
-            OrderedBroadcastStrategy orderedBroadcastStrategy) {
+            OrderedBroadcastAbortStrategy orderedBroadcastAbortStrategy) {
         BroadcastRegistrar broadcastRegistrar = new BroadcastRegistrar(context, intentFilter);
-        return createBroadcastObservable(broadcastRegistrar, orderedBroadcastStrategy);
+        return createBroadcastObservable(broadcastRegistrar, orderedBroadcastAbortStrategy);
     }
 
     /**
@@ -101,7 +101,7 @@ public class RxBroadcast {
      *                                 is required.
      * @param handler                  Handler identifying the thread that will receive the
      *                                 Intent. If null, the main thread of the process will be used.
-     * @param orderedBroadcastStrategy the strategy to use for Ordered Broadcasts
+     * @param orderedBroadcastAbortStrategy the strategy to use for Ordered Broadcasts
      * @return {@link Observable} of {@link Intent} that matches the filter
      */
     public static Observable<Intent> fromBroadcast(
@@ -109,7 +109,7 @@ public class RxBroadcast {
             IntentFilter intentFilter,
             String broadcastPermission,
             Handler handler,
-            OrderedBroadcastStrategy orderedBroadcastStrategy) {
+            OrderedBroadcastAbortStrategy orderedBroadcastAbortStrategy) {
         BroadcastWithPermissionsRegistrar broadcastWithPermissionsRegistrar =
                 new BroadcastWithPermissionsRegistrar(
                         context,
@@ -118,7 +118,7 @@ public class RxBroadcast {
                         handler);
         return createBroadcastObservable(
                 broadcastWithPermissionsRegistrar,
-                orderedBroadcastStrategy);
+                orderedBroadcastAbortStrategy);
     }
 
     /**
@@ -141,7 +141,7 @@ public class RxBroadcast {
 
     private static Observable<Intent> createBroadcastObservable(
             final BroadcastRegistrarStrategy broadcastRegistrarStrategy,
-            final OrderedBroadcastStrategy orderedBroadcastStrategy) {
+            final OrderedBroadcastAbortStrategy orderedBroadcastAbortStrategy) {
         return Observable.fromEmitter(new Action1<AsyncEmitter<Intent>>() {
             @Override
             public void call(final AsyncEmitter<Intent> intentEmitter) {
@@ -152,7 +152,7 @@ public class RxBroadcast {
                         intentEmitter.onNext(intent);
 
                         if (isOrderedBroadcast()) {
-                            orderedBroadcastStrategy.handleOrderedBroadcast(
+                            orderedBroadcastAbortStrategy.handleOrderedBroadcast(
                                     context,
                                     intent,
                                     BroadcastReceiverAbortProxy.create(this));

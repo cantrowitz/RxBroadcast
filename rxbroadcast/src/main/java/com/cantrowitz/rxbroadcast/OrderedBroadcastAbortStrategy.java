@@ -7,7 +7,7 @@ import android.content.Intent;
  * Created by adamcantrowitz on 9/26/16.
  */
 
-public interface OrderedBroadcastStrategy {
+public interface OrderedBroadcastAbortStrategy {
 
     /**
      * This method intends to handle user specific logic based on received Ordered Broadcasts and
@@ -21,5 +21,4 @@ public interface OrderedBroadcastStrategy {
             Context context,
             Intent intent,
             BroadcastReceiverAbortProxy broadcastReceiverAbortProxy);
-
 }
