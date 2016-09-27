@@ -16,6 +16,16 @@ import rx.functions.Action1;
  */
 public class RxBroadcast {
 
+    private static final OrderedBroadcastStrategy NO_OP_ORDERED_BROADCAST_STRATEGY = new
+            OrderedBroadcastStrategy() {
+                @Override
+                public void handleOrderedBroadcast(Context context,
+                                                   Intent intent,
+                                                   BroadcastReceiverAbortProxy abortProxy) {
+                    //no-op
+                }
+            };
+
     private RxBroadcast() {
         throw new AssertionError("No instances");
     }
@@ -27,13 +37,8 @@ public class RxBroadcast {
      * @param intentFilter the filter for the particular intent
      * @return {@link Observable} of {@link Intent} that matches the filter
      */
-    public static Observable<Intent> fromBroadcast(
-            Context context,
-            IntentFilter intentFilter) {
-        return fromBroadcast(
-                context,
-                intentFilter,
-                OrderedBroadcastAborter.Factory.createAlwaysFalseAborter());
+    public static Observable<Intent> fromBroadcast(Context context, IntentFilter intentFilter) {
+        return fromBroadcast(context, intentFilter, NO_OP_ORDERED_BROADCAST_STRATEGY);
     }
 
     /**
@@ -42,21 +47,18 @@ public class RxBroadcast {
      * <em>This is only useful in conjunction with Ordered Broadcasts, e.g.,
      * {@link Context#sendOrderedBroadcast(Intent, String)}</em>
      *
-     * @param context                 the context the {@link BroadcastReceiver} will be created from
-     * @param intentFilter            the filter for the particular intent
-     * @param orderedBroadcastAborter the aborter to use for Ordered Broadcasts
+     * @param context                  the context the {@link BroadcastReceiver} will be
+     *                                 created from
+     * @param intentFilter             the filter for the particular intent
+     * @param orderedBroadcastStrategy the strategy to use for Ordered Broadcasts
      * @return {@link Observable} of {@link Intent} that matches the filter
      */
     public static Observable<Intent> fromBroadcast(
             Context context,
             IntentFilter intentFilter,
-            OrderedBroadcastAborter orderedBroadcastAborter) {
-        BroadcastRegistrar broadcastRegistrar = new BroadcastRegistrar(
-                context,
-                intentFilter);
-        return createBroadcastObservable(
-                broadcastRegistrar,
-                orderedBroadcastAborter);
+            OrderedBroadcastStrategy orderedBroadcastStrategy) {
+        BroadcastRegistrar broadcastRegistrar = new BroadcastRegistrar(context, intentFilter);
+        return createBroadcastObservable(broadcastRegistrar, orderedBroadcastStrategy);
     }
 
     /**
@@ -81,7 +83,7 @@ public class RxBroadcast {
                 intentFilter,
                 broadcastPermission,
                 handler,
-                OrderedBroadcastAborter.Factory.createAlwaysFalseAborter()
+                NO_OP_ORDERED_BROADCAST_STRATEGY
         );
     }
 
@@ -91,14 +93,15 @@ public class RxBroadcast {
      * <em>This is only useful in conjunction with Ordered Broadcasts, e.g.,
      * {@link Context#sendOrderedBroadcast(Intent, String)}</em>
      *
-     * @param context                 the context the {@link BroadcastReceiver} will be created from
-     * @param intentFilter            the filter for the particular intent
-     * @param broadcastPermission     String naming a permissions that a broadcaster must hold in
-     *                                order to send an Intent to you. If null, no permission is
-     *                                required.
-     * @param handler                 Handler identifying the thread that will receive the Intent.
-     *                                If null, the main thread of the process will be used.
-     * @param orderedBroadcastAborter the aborter to use for Ordered Broadcasts
+     * @param context                  the context the {@link BroadcastReceiver} will be created
+     *                                 from
+     * @param intentFilter             the filter for the particular intent
+     * @param broadcastPermission      String naming a permissions that a broadcaster must hold
+     *                                 in order to send an Intent to you. If null, no permission
+     *                                 is required.
+     * @param handler                  Handler identifying the thread that will receive the
+     *                                 Intent. If null, the main thread of the process will be used.
+     * @param orderedBroadcastStrategy the strategy to use for Ordered Broadcasts
      * @return {@link Observable} of {@link Intent} that matches the filter
      */
     public static Observable<Intent> fromBroadcast(
@@ -106,7 +109,7 @@ public class RxBroadcast {
             IntentFilter intentFilter,
             String broadcastPermission,
             Handler handler,
-            OrderedBroadcastAborter orderedBroadcastAborter) {
+            OrderedBroadcastStrategy orderedBroadcastStrategy) {
         BroadcastWithPermissionsRegistrar broadcastWithPermissionsRegistrar =
                 new BroadcastWithPermissionsRegistrar(
                         context,
@@ -115,7 +118,7 @@ public class RxBroadcast {
                         handler);
         return createBroadcastObservable(
                 broadcastWithPermissionsRegistrar,
-                orderedBroadcastAborter);
+                orderedBroadcastStrategy);
     }
 
     /**
@@ -130,16 +133,15 @@ public class RxBroadcast {
     public static Observable<Intent> fromLocalBroadcast(
             Context context,
             IntentFilter intentFilter) {
-        LocalBroadcastRegistrar localBroadcastRegistrar = new LocalBroadcastRegistrar(intentFilter,
+        LocalBroadcastRegistrar localBroadcastRegistrar = new LocalBroadcastRegistrar(
+                intentFilter,
                 LocalBroadcastManager.getInstance(context));
-        return createBroadcastObservable(
-                localBroadcastRegistrar,
-                OrderedBroadcastAborter.Factory.createAlwaysFalseAborter());
+        return createBroadcastObservable(localBroadcastRegistrar, NO_OP_ORDERED_BROADCAST_STRATEGY);
     }
 
     private static Observable<Intent> createBroadcastObservable(
-            final BroadcastRegistrarStrategy strategy,
-            final OrderedBroadcastAborter orderedBroadcastAborter) {
+            final BroadcastRegistrarStrategy broadcastRegistrarStrategy,
+            final OrderedBroadcastStrategy orderedBroadcastStrategy) {
         return Observable.fromEmitter(new Action1<AsyncEmitter<Intent>>() {
             @Override
             public void call(final AsyncEmitter<Intent> intentEmitter) {
@@ -148,12 +150,12 @@ public class RxBroadcast {
                     @Override
                     public void onReceive(Context context, Intent intent) {
                         intentEmitter.onNext(intent);
-                        if (orderedBroadcastAborter.shouldAbortBroadcast(context, intent)) {
-                            abortBroadcast();
-                        } else if (orderedBroadcastAborter.shouldClearAbortBroadcast(
-                                context,
-                                intent)) {
-                            clearAbortBroadcast();
+
+                        if (isOrderedBroadcast()) {
+                            orderedBroadcastStrategy.handleOrderedBroadcast(
+                                    context,
+                                    intent,
+                                    BroadcastReceiverAbortProxy.create(this));
                         }
                     }
                 };
@@ -161,11 +163,11 @@ public class RxBroadcast {
                 intentEmitter.setCancellation(new AsyncEmitter.Cancellable() {
                     @Override
                     public void cancel() throws Exception {
-                        strategy.unregisterBroadcastReceiver(broadcastReceiver);
+                        broadcastRegistrarStrategy.unregisterBroadcastReceiver(broadcastReceiver);
                     }
                 });
 
-                strategy.registerBroadcastReceiver(broadcastReceiver);
+                broadcastRegistrarStrategy.registerBroadcastReceiver(broadcastReceiver);
             }
         }, AsyncEmitter.BackpressureMode.NONE);
     }
