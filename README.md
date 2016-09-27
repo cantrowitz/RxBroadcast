@@ -31,6 +31,31 @@ Be sure to unregistering your receiver, this is typically done in the `Activity.
   }
 ```
 
+# Ordered Broadcasts
+```java
+   IntentFilter intentFilter = new IntentFilter(ACTION_PRIORITY);
+   intentFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
+   final OrderedBroadcastAbortStrategy allowMultiplesOfFive = new
+           OrderedBroadcastAbortStrategy() {
+               @Override
+               public void handleOrderedBroadcast(
+                             Context context, 
+                             Intent intent,
+                             BroadcastReceiverAbortProxy broadcastReceiverAbortProxy) {
+                   int value = intent.getIntExtra(EXTRA_DATA, 0);
+                   if (value % 5 == 0) {
+                       broadcastReceiverAbortProxy.clearAbortBroadcast();
+                   } else {
+                       broadcastReceiverAbortProxy.abortBroadcast();
+                   }
+               }
+           };
+   return RxBroadcast.fromBroadcast(
+           this,
+           intentFilter,
+           allowMultiplesOfFive)
+```
+
 # Installation
 
 ```groovy
