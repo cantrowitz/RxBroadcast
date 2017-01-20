@@ -2,7 +2,7 @@
 
 Version 1.1.1 *(2017-01-19)*
 ----------------------------
-Updated RxJava version and replaced deprecated AsyncEmitter with Emitter
+Updated RxJava to version 1.2.5 and replaced deprecated AsyncEmitter with Emitter
 
 Version 1.1.0 *(2016-09-27)*
 ----------------------------
